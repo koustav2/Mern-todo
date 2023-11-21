@@ -91,7 +91,7 @@ router.put('/updateTodo', async (req, res) => {
     }
 });
 
-router.put('/completed/', async function (req, res) {
+router.put('/completed', async function (req, res) {
     const { id } = req.body;
     // console.log(id)
     // Check if the id is a valid ObjectId
@@ -117,8 +117,11 @@ router.put('/completed/', async function (req, res) {
         res.status(500).json({ errorMessage: error.message });
     }
 });
-router.delete('/deleteTodo', async (req, res) => {
-    const { id } = req.body;
+router.delete('/deleteTodo/:id', async (req, res) => {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "Invalid id" });
+    }
     try {
         const todo = await ToDo.findById(id);
         if (!todo) {
@@ -126,9 +129,7 @@ router.delete('/deleteTodo', async (req, res) => {
                 message: "No todo found"
             });
         }
-        await ToDo.findByIdAndDelete({
-            _id: id
-        });
+        await ToDo.findByIdAndDelete(id); // Corrected line
         res.status(200).json({
             message: "Todo deleted successfully",
         })

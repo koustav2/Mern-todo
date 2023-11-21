@@ -1,30 +1,43 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import { toast } from "react-toastify";
 
 
 const TodoItem = React.forwardRef(
-  ({ todo, ...props }, ref) => {
+  ({ todo,setTodos, }, ref) => {
     const { _id, title, completed } = todo;
 
-    const removeTodo = async () => { }
-    const updateTodo = async (id) => {
+
+    const removeTodo = async (id) => {
       try {
-        const res = await axios.put(`http://localhost:8000/api/todo/completed/`, {
-          id,
-        });
-        toast.success(res.data.message);
+        await axios.delete(`http://localhost:8000/api/todo/deleteTodo/${id}`);
+        setTodos((prev) => prev.filter((todo) => todo._id !== id));
+        toast.success("Todo deleted successfully!");
       } catch (error) {
         toast.error(error.message);
       }
     }
+    const updateTodo = async (id) => {
+      try {
+        await axios.put(`http://localhost:8000/api/todo/completed`, {
+          id,
+        });
+        setTodos((prev) =>
+          prev.map((todo) =>
+            todo._id === id ? { ...todo, completed: !todo.completed } : todo
+          )
+        );
+      } catch (error) {
+        toast.error(error.message);
+      }
+    };
     return (
       <article
-        {...props}
         ref={ref}
-        className="flex gap-4 border-b gray-400 transition-all duration-1000"
+        className="flex gap-4 transition-all duration-1000 border-b gray-400"
       >
         <button
           className={`h-5 w-5 flex-none rounded-full border-2 ${completed
@@ -34,7 +47,7 @@ const TodoItem = React.forwardRef(
           onClick={() => updateTodo(_id)}
         >
           {completed &&
-            <svg {...props} xmlns="http://www.w3.org/2000/svg" width="11" height="9">
+            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="9">
               <path
                 fill="none"
                 stroke="#FFF"
@@ -68,12 +81,12 @@ TodoItem.displayName = "TodoItem"; // set display name for component
 
 TodoItem.propTypes = {
   todo: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    title: PropTypes.string.isRequired,
-    completed: PropTypes.bool.isRequired,
-  }).isRequired,
-  removeTodo: PropTypes.func.isRequired,
-  updateTodo: PropTypes.func.isRequired,
+    id: PropTypes.number,
+    title: PropTypes.string,
+    completed: PropTypes.bool,
+  }),
+  removeTodo: PropTypes.func,
+  updateTodo: PropTypes.func,
 };
 
 export default TodoItem;

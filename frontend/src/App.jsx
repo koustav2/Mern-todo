@@ -1,10 +1,9 @@
 /* eslint-disable no-unused-vars */
-import { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import './App.css'
 import { ThemeProvider } from './context/theme'
 import ToDoCreate from './components/ToDoCreate'
-import { TodoFilter } from './components/ToDoFilter'
 import ToDoDetails from './components/ToDoDetails';
 import ToDoItem from './components/ToDoItem';
 import { ToastContainer, toast } from 'react-toastify';
@@ -24,7 +23,7 @@ function App() {
   const [themeMode, setThemeMode] = useState(storedThemeMode || 'light')
   const [filter, setFilter] = useState("all");
   const [todos, setTodos] = useState([]);
-
+  const [title, setTitle] = React.useState('')
   const darkTheme = () => {
     setThemeMode('dark')
   }
@@ -32,6 +31,33 @@ function App() {
     setThemeMode('light')
   }
 
+  const fetchTodos = async () => {
+    try {
+      const res = await axios.get('http://localhost:8000/api/todo')
+      setTodos(res.data.todos)
+    } catch (error) {
+      toast.info('No Todos Available.. please create todos')
+    }
+  }
+
+  const handleSubmitAddTodo = async (e) => {
+    e.preventDefault();
+    if (!title) {
+      toast.error('Please enter a title');
+      return;
+    }
+    try {
+      await axios.post('http://localhost:8000/api/todo/postTodos', {
+        title
+      });
+      setTitle('');
+      fetchTodos();
+
+    } catch (error) {
+      toast.error('An error occurred while adding the todo');
+      console.error(error);
+    }
+  };
 
   const changeFilter = (filter) => setFilter(filter);
   const filteredTodos = () => {
@@ -47,16 +73,13 @@ function App() {
     }
   };
   const handleDragEnd = (result) => {
-    const { destination, source } = result;
-    if (!destination) return;
-    if (
-      source.index === destination.index &&
-      source.droppableId === destination.droppableId
-    )
-      return;
-    setTodos((prevTasks) =>
-      reorder(prevTasks, source.index, destination.index)
+    if (!result.destination) return;
+    const items = reorder(
+      todos,
+      result.source.index,
+      result.destination.index
     );
+    setTodos(items);
   };
 
   useEffect(() => {
@@ -65,13 +88,25 @@ function App() {
     localStorage.setItem('themeMode', themeMode)
   }, [themeMode])
 
+
+  const clearAll = async () => {
+    if (todos.length === 0) return toast.info('No todos to clear')
+    try {
+      await axios.delete("http://localhost:8000/api/todo/deleteAll");
+      setTodos([])
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+
   useEffect(() => {
     const fetchTodos = async () => {
       try {
         const res = await axios.get('http://localhost:8000/api/todo')
         setTodos(res.data.todos)
       } catch (error) {
-        toast.info('No Todos Available.. please create todos')
+        // toast.info('No Todos Available.. please create todos')
       }
     }
     fetchTodos()
@@ -79,9 +114,6 @@ function App() {
     todos.length
   ])
 
-  if (todos) {
-    console.log(todos)
-  }
 
 
 
@@ -126,8 +158,8 @@ function App() {
               </button>
             </div>
           </header>
-          <main className="container mt-8 px-4 mx-auto md:max-w-xl">
-            <ToDoCreate />
+          <main className="container px-4 mx-auto mt-8 md:max-w-xl">
+            <ToDoCreate handleSubmitAddTodo={handleSubmitAddTodo} title={title} setTitle={setTitle} />
             <DragDropContext onDragEnd={handleDragEnd}>
               <Droppable droppableId="todos">
                 {(droppableProvided) => (
@@ -137,10 +169,12 @@ function App() {
                     className="rounded-t-md bg-white [&>article]:p-4 mt-8 overflow-hidden dark:bg-gray-800 transition-all duration-1000"
                   >
                     {filteredTodos().map((todo, index) => (
-                      <Draggable key={todo._id} index={index} draggableId={`${todo._id}`}>
+                      <Draggable key={todo?._id} index={index} draggableId={`${todo._id}`}>
                         {(draggableProvided) => (
                           <ToDoItem
                             key={todo._id}
+                            fetchTodos={fetchTodos}
+                            setTodos={setTodos}
                             todo={todo}
                             ref={draggableProvided.innerRef}
                             {...draggableProvided.dragHandleProps}
@@ -156,9 +190,11 @@ function App() {
             </DragDropContext>
             <ToDoDetails
               todos={todos}
+              setTodos={setTodos}
+              clearAll={clearAll}
             />
             <section className="container mx-auto mt-8">
-              <div className="flex justify-center gap-4 rounded-md p-4 bg-white p-4 dark:bg-gray-800 transition-all duration-1000">
+              <div className="flex justify-center gap-4 p-4 transition-all duration-1000 bg-white rounded-md dark:bg-gray-800">
                 <button
                   className={`${filter === "all"
                     ? "text-blue-500 hover:text-gray-400"
