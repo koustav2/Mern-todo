@@ -13,7 +13,7 @@ const TodoItem = React.forwardRef(
 
     const removeTodo = async (id) => {
       try {
-        await axios.delete(`https://mern-todo-vdft.vercel.app/api/todo/deleteTodo/${id}`);
+        await axios.delete(`https://mern-todo-alpha.vercel.app/api/todo/deleteTodo/${id}`);
         setTodos((prev) => prev.filter((todo) => todo._id !== id));
         toast.success("Todo deleted successfully!");
       } catch (error) {
@@ -22,7 +22,7 @@ const TodoItem = React.forwardRef(
     }
     const updateTodo = async (id) => {
       try {
-        await axios.put(`https://mern-todo-vdft.vercel.app/api/todo/completed`, {
+        await axios.put(`https://mern-todo-alpha.vercel.app/api/todo/completed`, {
           id,
         });
         setTodos((prev) =>

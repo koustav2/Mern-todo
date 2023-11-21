@@ -33,7 +33,7 @@ function App() {
 
   const fetchTodos = async () => {
     try {
-      const res = await axios.get('https://mern-todo-vdft.vercel.app/api/todo')
+      const res = await axios.get('https://mern-todo-alpha.vercel.app/api/todo')
       setTodos(res.data.todos)
     } catch (error) {
       toast.info('No Todos Available.. please create todos')
@@ -47,7 +47,7 @@ function App() {
       return;
     }
     try {
-      await axios.post('https://mern-todo-vdft.vercel.app/api/todo/postTodos', {
+      await axios.post('https://mern-todo-alpha.vercel.app/api/todo/postTodos', {
         title
       });
       setTitle('');
@@ -92,7 +92,7 @@ function App() {
   const clearAll = async () => {
     if (todos.length === 0) return toast.info('No todos to clear')
     try {
-      await axios.delete("https://mern-todo-vdft.vercel.app/api/todo/deleteAll");
+      await axios.delete("https://mern-todo-alpha.vercel.app/api/todo/deleteAll");
       setTodos([])
     } catch (error) {
       toast.error(error.message);
@@ -103,7 +103,7 @@ function App() {
   useEffect(() => {
     const fetchTodos = async () => {
       try {
-        const res = await axios.get('https://mern-todo-vdft.vercel.app/api/todo')
+        const res = await axios.get('https://mern-todo-alpha.vercel.app/api/todo')
         setTodos(res.data.todos)
       } catch (error) {
         // toast.info('No Todos Available.. please create todos')
