@@ -16,5 +16,3 @@ vercel.json
 
 # Ignore single-character .js files (like a.js, b.js, etc.)
 ?.js
-
-.env
