@@ -21,7 +21,7 @@ router.post("/postTodos", async (req, res) => {
             errorMessage: error.message
         });
     }
-})
+});
 
 router.get("/", async (req, res) => {
     const todos = await ToDo.find({});
