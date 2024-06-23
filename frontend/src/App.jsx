@@ -33,7 +33,8 @@ function App() {
 
   const fetchTodos = async () => {
     try {
-      const res = await axios.get('https://mern-todo-alpha.vercel.app/api/todo')
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URI}/`)
+      debugger
       setTodos(res.data.todos)
     } catch (error) {
       toast.info('No Todos Available.. please create todos')
@@ -47,9 +48,10 @@ function App() {
       return;
     }
     try {
-      await axios.post('https://mern-todo-alpha.vercel.app/api/todo/postTodos', {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URI}/postTodos`, {
         title
       });
+      debugger
       setTitle('');
       fetchTodos();
 
@@ -92,7 +94,7 @@ function App() {
   const clearAll = async () => {
     if (todos.length === 0) return toast.info('No todos to clear')
     try {
-      await axios.delete("https://mern-todo-alpha.vercel.app/api/todo/deleteAll");
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URI}/deleteAll`);
       setTodos([])
     } catch (error) {
       toast.error(error.message);
@@ -103,7 +105,7 @@ function App() {
   useEffect(() => {
     const fetchTodos = async () => {
       try {
-        const res = await axios.get('https://mern-todo-alpha.vercel.app/api/todo')
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URI}/`)
         setTodos(res.data.todos)
       } catch (error) {
         // toast.info('No Todos Available.. please create todos')
@@ -137,7 +139,7 @@ function App() {
               <button onClick={() =>
                 themeMode === 'light' ? darkTheme() : lightTheme()
               }>
-                {themeMode ?
+                {themeMode === 'light' ?
                   <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26">
                     <path
                       fill="#FFF"
@@ -145,13 +147,7 @@ function App() {
                       d="M13 21a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm-5.657-2.343a1 1 0 010 1.414l-2.121 2.121a1 1 0 01-1.414-1.414l2.12-2.121a1 1 0 011.415 0zm12.728 0l2.121 2.121a1 1 0 01-1.414 1.414l-2.121-2.12a1 1 0 011.414-1.415zM13 8a5 5 0 110 10 5 5 0 010-10zm12 4a1 1 0 110 2h-3a1 1 0 110-2h3zM4 12a1 1 0 110 2H1a1 1 0 110-2h3zm18.192-8.192a1 1 0 010 1.414l-2.12 2.121a1 1 0 01-1.415-1.414l2.121-2.121a1 1 0 011.414 0zm-16.97 0l2.121 2.12A1 1 0 015.93 7.344L3.808 5.222a1 1 0 011.414-1.414zM13 0a1 1 0 011 1v3a1 1 0 11-2 0V1a1 1 0 011-1z"
                     />
                   </svg> :
-                  <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26">
-                    <path
-                      fill="#FFF"
-                      fillRule="evenodd"
-                      d="M13 0c.81 0 1.603.074 2.373.216C10.593 1.199 7 5.43 7 10.5 7 16.299 11.701 21 17.5 21c2.996 0 5.7-1.255 7.613-3.268C23.22 22.572 18.51 26 13 26 5.82 26 0 20.18 0 13S5.82 0 13 0z"
-                    />
-                  </svg>
+                  <svg enable-background="new 0 0 512 512" width="35" height="35" id="Layer_1" version="1.1" viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M349.852,343.15c-49.875,49.916-131.083,49.916-181,0c-49.916-49.918-49.916-131.125,0-181.021  c13.209-13.187,29.312-23.25,47.832-29.812c5.834-2.042,12.293-0.562,16.625,3.792c4.376,4.375,5.855,10.833,3.793,16.625  c-12.542,35.375-4,73.666,22.25,99.917c26.209,26.228,64.5,34.75,99.916,22.25c5.792-2.062,12.271-0.582,16.625,3.793  c4.376,4.332,5.834,10.812,3.771,16.625C373.143,313.838,363.06,329.941,349.852,343.15z M191.477,184.754  c-37.438,37.438-37.438,98.354,0,135.771c40,40.021,108.125,36.416,143-8.168c-35.959,2.25-71.375-10.729-97.75-37.084  c-26.375-26.354-39.333-61.771-37.084-97.729C196.769,179.796,194.039,182.192,191.477,184.754z" fill="#1D1D1B" /></svg>
 
 
                 }
