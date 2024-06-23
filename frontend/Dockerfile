@@ -10,6 +10,6 @@ COPY . .
 
 COPY .env .
 
-EXPOSE $PORT
+EXPOSE 5173
 
 CMD ["npm", "run", "dev"]
